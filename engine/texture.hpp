@@ -27,7 +27,11 @@ public:
         return *this;
     }
     /// Destructor
-    ~Texture() {delete image;}
+    ~Texture() {delete[] image;}
+
+    uint32_t At(int x, int y) {
+        return image[y * w + x];
+    }
 
     Texture* FlipHorizontally() {
         auto tex = new uint32_t[w * h];
@@ -46,6 +50,39 @@ public:
 #pragma omp parallel for
             for (int y = 0; y < h; ++y) {
                 tex[y * w + (w - x - 1)] = image[y * w + x];
+            }
+        }
+        return new Texture(tex, w, h);
+    }
+
+    Texture* Rotate90CW() {
+        auto tex = new uint32_t[w * h];
+        for (int x = 0; x < w; ++x) {
+#pragma omp parallel for
+            for (int y = 0; y < h; ++y) {
+                tex[y * w + x] = image[(w - 1 - x) * w + y];
+            }
+        }
+        return new Texture(tex, w, h);
+    }
+
+    Texture* Rotate90CCW() {
+        auto tex = new uint32_t[w * h];
+        for (int x = 0; x < w; ++x) {
+#pragma omp parallel for
+            for (int y = 0; y < h; ++y) {
+                tex[y * w + x] = image[x * w + h - 1 - y];
+            }
+        }
+        return new Texture(tex, w, h);
+    }
+
+    Texture* Rotate180() {
+        auto tex = new uint32_t[w * h];
+        for (int x = 0; x < w; ++x) {
+#pragma omp parallel for
+            for (int y = 0; y < h; ++y) {
+                tex[y * w + x] = image[(h - 1 - y) * w + w - 1 - x];
             }
         }
         return new Texture(tex, w, h);

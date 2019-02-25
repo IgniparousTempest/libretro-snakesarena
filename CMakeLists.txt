@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(supersnakes_libretro)
+project(snakesarena_libretro)
 
 set (CMAKE_CXX_STANDARD 14)
 
@@ -14,18 +14,30 @@ IF(USE_OpenMP)
     ENDIF()
 ENDIF()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 # Include engine files
 file(GLOB ENGINE_SOURCE "engine/*.hpp" "engine/*.cpp")
+file(GLOB PUGIXML_SOURCE "pugixml/*.hpp" "pugixml/*.cpp")
+
+file(GLOB CONTEXTS_SOURCE "contexts/*.hpp" "contexts/*.cpp")
 
 # Set source files
 add_library(${PROJECT_NAME} SHARED
         libretro.hpp
         libretro.cpp
-        game.cpp game.hpp
+        assets.hpp
+        auxillary.hpp
+        field.cpp field.hpp
+        field_header.cpp field_header.hpp
+        game_manager.cpp game_manager.hpp
         input.hpp
-        ${ENGINE_SOURCE})
+        level.cpp level.hpp
+        save_data.cpp save_data.hpp
+        snake.cpp snake.hpp
+        ${ENGINE_SOURCE}
+        ${PUGIXML_SOURCE}
+        ${CONTEXTS_SOURCE})
 
 # Removes the 'lib' prefix on Linux
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")

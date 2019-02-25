@@ -22,7 +22,7 @@ Sound *Audio::LoadWav(const std::string &file_path) {
         input_file.read((char*)&format_sub_chunk, sizeof(format_sub_chunk));
 
         if (format_sub_chunk.subchunk1_size == 16)
-            throw std::runtime_error("Need to rewind 2 bytes before continuing.");
+            input_file.seekg(-2, std::ifstream::cur);
         else if (!(format_sub_chunk.subchunk1_size == 18 && format_sub_chunk.extra_param_size == 0))
             throw std::runtime_error("Can't process extra parameters.");
         if (format_sub_chunk.bits_per_sample != 16)

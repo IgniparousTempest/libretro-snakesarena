@@ -1,0 +1,11 @@
+﻿In Gimp select Colors->Hue-Chroma...
+To get the other player colours, start with the player 1 image and:
+
+player 2: hue -82
+player 3: hue +180
+player 4: hue -40, lightness: +20, redraw black
+
+In Gimp select Colors->Hue-Saturation...
+player 5: hue -120
+player 6: hue +90
+player 7: hue -88 lightness -100 saturation -54

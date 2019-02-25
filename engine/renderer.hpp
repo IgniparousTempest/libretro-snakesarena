@@ -20,15 +20,18 @@ public:
         framebuffer = new uint32_t[width * height];
     }
 
+    ~Renderer() {
+        delete [] framebuffer;
+    }
+
     static uint32_t rgb(uint8_t r, uint8_t g, uint8_t b) {
-        return r << 16 | g << 8 | b;
+        uint8_t a = 255;
+        return a << 24 | r << 16 | g << 8 | b;
     }
 
     /// Fill the screen with the specified colour.
     /// \param colour The colour to fill the screen with.
     void Clear(uint32_t colour) {
-//        std::memset(framebuffer, colour, sizeof(framebuffer));
-//        std::fill(framebuffer, framebuffer + width * height, colour);
         int threads = omp_get_max_threads();
         int len = width * height;
 #pragma omp parallel for
@@ -37,38 +40,46 @@ public:
             uint32_t *end = framebuffer + len / threads * (i + 1);
             std::fill(start, end, colour);
         }
-//#pragma omp parallel for
-//        for (int x = 0; x <width; ++x) {
-//            for (int y = 0; y < height; ++y) {
-//                framebuffer[y * width + x] = colour;
-//            }
-//        }
+    }
+
+    void RenderSquare(uint32_t colour, Rect* dest) {
+#pragma omp parallel for
+        for (int y = 0; y < dest->h; ++y) {
+            uint32_t *start = framebuffer + (dest->y + y) * width + dest->x;
+            std::fill(start, start + dest->w, colour);
+        }
     }
 
     /// Renders the whole image to the screen at the position and size defined in the rect.
     /// \param image The image to draw to the screen.
     /// \param dest The position and size to draw the image at.
-    void Render(Texture* image, Rect* dest);
+    void Render(const Texture* image, Rect* dest);
+
+    /// Renders the whole image to the screen at the position and size defined in the rect.
+    /// \param image The image to draw to the screen.
+    /// \param dest The position and size to draw the image at.
+    /// \param angle The angle in degrees to rotate the image.
+    void Render(const Texture* image, Rect* dest, int angle);
 
     /// Draws a part of an image to the screen.
     /// \param image The image to draw to the screen.
     /// \param src The subsection of the image to draw.
     /// \param dest The position and size to draw the image at.
-    void Render(Texture* image, Rect* src, Rect* dest);
+    void Render(const Texture* image, Rect* src, Rect* dest);
 
     /// Draws an image to the screen.
     /// \param image The image to draw to the screen.
     /// \param src The subsection of the image to draw.
     /// \param dest The position and size to draw the image at.
     /// \param angle The angle in degrees to rotate the image.
-    void Render(Texture* image, Rect* src, Rect* dest, double angle);
+    void Render(const Texture* image, Rect* src, Rect* dest, double angle);
 
     /// Renders the whole image to the screen at the position and size defined in the rect.
     /// The image's alpha is ignored and the specified opacity is used instead.
     /// \param image The image to draw to the screen.
     /// \param dest The position and size to draw the image at.
     /// \param opacity The opacity to draw the image at, should be between 0 and 1.
-    void RenderForceAlpha(Texture* image, Rect* dest, double opacity);
+    void RenderForceAlpha(const Texture* image, Rect* dest, double opacity);
 
 private:
     /// Draws the addend pixel over the augend pixel with the specified transparency.
@@ -77,6 +88,10 @@ private:
     /// \param opacity The opacity to draw the top pixel with.
     /// \return The result of the pixel addition.
     uint32_t OverlayPixels(uint32_t augend, uint32_t addend, double opacity);
+
+    void Render90(uint32_t *framebuffer, int width, int height, const Texture* image, Rect *src, Rect *dest);
+    void Render180(uint32_t *framebuffer, int width, int height, const Texture* image, Rect *src, Rect *dest);
+    void Render270(uint32_t *framebuffer, int width, int height, const Texture* image, Rect *src, Rect *dest);
 };
 
 

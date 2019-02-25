@@ -20,6 +20,11 @@ struct Rect
         return !(x + w <= other->x || y + h <= other->y || x >= other->x + other->w || y >= other->y + other->h);
     }
 
+    std::string ToString()
+    {
+        return "{x: " + std::to_string(x) + ", y: " + std::to_string(y) + ", w: " + std::to_string(w) + ", h: " + std::to_string(h) + "}";
+    }
+
     int x, y, w, h;
 };
 

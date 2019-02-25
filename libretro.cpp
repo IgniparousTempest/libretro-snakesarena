@@ -1,5 +1,5 @@
 #include "libretro.hpp"
-#include "game.hpp"
+#include "game_manager.hpp"
 #include "input.hpp"
 #include <cstring>
 #include <memory>
@@ -7,13 +7,13 @@
 #include <iostream>
 #include <omp.h>
 
-static const unsigned FRAMEBUFFER_WIDTH = 1280;
-static const unsigned FRAMEBUFFER_HEIGHT = 720;
+static const unsigned FRAMEBUFFER_WIDTH = 1920 / 4;
+static const unsigned FRAMEBUFFER_HEIGHT = 1080 / 4;
 
 std::string core_path;
 std::string system_dir;
 std::vector<Input> input;
-std::unique_ptr<Game> game;
+std::unique_ptr<GameManager> game;
 #define AUDIO_FRAMES (44100 / 60)
 int16_t buffer[AUDIO_FRAMES * 2];
 
@@ -66,7 +66,7 @@ bool retro_load_game(const struct retro_game_info *info)
     use_audio_cb = environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK, &cb);
 
     input = {{}, {}, {}, {}, {}, {}, {}, {}};
-    game = std::make_unique<Game>(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, core_path, system_dir);
+    game = std::make_unique<GameManager>(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, core_path, system_dir);
     return true;
 }
 
@@ -127,7 +127,7 @@ void retro_set_environment(retro_environment_t cb)
     cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
     // Delta time setup
-    retro_usec_t time_reference = 1000000 / Game::game_fps;
+    retro_usec_t time_reference = 1000000 / GameManager::game_fps;
     auto frame_time_cb = [](retro_usec_t usec) { delta_time = usec / 1000000.0; };
     struct retro_frame_time_callback frame_cb = { frame_time_cb, time_reference };
     cb(RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK, &frame_cb);
@@ -173,8 +173,8 @@ void retro_init(void)
 void retro_get_system_info(struct retro_system_info *info)
 {
     memset(info, 0, sizeof(*info));
-    info->library_name = Game::game_name;
-    info->library_version = Game::game_version;
+    info->library_name = GameManager::game_name;
+    info->library_version = GameManager::game_version;
     info->need_fullpath = false;
     info->valid_extensions = "zip";
 }
@@ -185,7 +185,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     int pixel_format = RETRO_PIXEL_FORMAT_XRGB8888;
 
     memset(info, 0, sizeof(*info));
-    info->timing.fps            = Game::game_fps;
+    info->timing.fps            = GameManager::game_fps;
     info->timing.sample_rate    = 44100;
     info->geometry.base_width   = FRAMEBUFFER_WIDTH;
     info->geometry.base_height  = FRAMEBUFFER_HEIGHT;
@@ -206,7 +206,7 @@ std::vector<Input> retropad_map_input(unsigned long num_controllers, std::vector
     for (unsigned int player = 0; player < num_controllers; ++player) {
         Input input = {};
 
-        input.select = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) == 1;
+        input.accept = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) == 1;
         input.back = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1;
         input.right = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT) == 1;
         input.down = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN) == 1;
@@ -214,7 +214,7 @@ std::vector<Input> retropad_map_input(unsigned long num_controllers, std::vector
         input.up = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) == 1;
         input.start = input_state_cb(player, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START) == 1;
 
-        input.select_pressed = !previous_input[player].select && input.select;
+        input.accept_pressed = !previous_input[player].accept && input.accept;
         input.back_pressed = !previous_input[player].back && input.back;
         input.right_pressed = !previous_input[player].right && input.right;
         input.down_pressed = !previous_input[player].down && input.down;
@@ -222,7 +222,7 @@ std::vector<Input> retropad_map_input(unsigned long num_controllers, std::vector
         input.up_pressed = !previous_input[player].up && input.up;
         input.start_pressed = !previous_input[player].start && input.start;
 
-        input.select_released = previous_input[player].select && !input.select;
+        input.accept_released = previous_input[player].accept && !input.accept;
         input.back_released = previous_input[player].back && !input.back;
         input.right_released = previous_input[player].right && !input.right;
         input.down_released = previous_input[player].down && !input.down;

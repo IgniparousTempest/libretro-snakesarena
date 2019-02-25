@@ -9,8 +9,12 @@
 #include <vector>
 #include "texture.hpp"
 
+struct BMP_FILE;
+
 class Image {
 public:
+    static Texture* LoadBMP(const std::string &file_path);
+
     /// Loads images from the PNM family.
     /// Only the following formats are allowed:
     /// * .ppm (binary and ascii)
@@ -27,6 +31,12 @@ private:
     static uint32_t* ParsePPM(std::basic_istream<char, std::char_traits<char>>& file, const std::string &magic_number, int* width, int* height);
 
     static uint32_t* ParsePAM(std::basic_istream<char, std::char_traits<char>>& file, int* width, int* height);
+
+    static void ExplainBMP(BMP_FILE image);
+
+    static uint16_t Short(char data[2]);
+
+    static uint32_t Int(char data[4]);
 };
 
 #endif //LR_SUPERFLAPPYBIRDS_IMAGE_HPP

@@ -1,10 +1,17 @@
 #include "renderer.hpp"
 
-void Renderer::Render(Texture *image, Rect *dest) {
+void Renderer::Render(const Texture* image, Rect *dest) {
+    Rect src = {0, 0, image->w, image->h};
+    Render(image, &src, dest);
+}
+
+void Renderer::Render90(uint32_t *framebuffer, int width, int height, const Texture* image, Rect *src, Rect *dest) {
     // Skip this render call if the destination is off the screen.
     if (dest->x > width || dest->y > height || dest->x + dest->w < 0 || dest->y + dest->h < 0)
         return;
 
+    double xs = src->w / (double) dest->w; // x-scale
+    double ys = src->h / (double) dest->h; // y-scale
 #pragma omp parallel for
     for (int x = 0; x < dest->w; ++x) {
         int screen_x;
@@ -15,17 +22,92 @@ void Renderer::Render(Texture *image, Rect *dest) {
             screen_x = dest->x + x;
             screen_y = dest->y + y;
             if (screen_x >= 0 && screen_y >= 0 && screen_x < width && screen_y < height) {
-                pixel = image->image[y * dest->w + x];
+                pixel = image->image[(src->x + (int) ((dest->w - x - 1) * xs)) * image->h + (src->y + (int) (y * ys))];
                 alpha = pixel >> 24;
-                //TODO: This can only handle full alpha or no alpha
-                if (alpha != 0)
+                if (alpha == 255)
                     framebuffer[screen_y * width + screen_x] = pixel;
+                else if (alpha != 0)
+                    framebuffer[screen_y * width + screen_x] = OverlayPixels(framebuffer[screen_y * width + screen_x], pixel, alpha / 255.0);
             }
         }
     }
 }
 
-void Renderer::Render(Texture *image, Rect *src, Rect *dest) {
+void Renderer::Render180(uint32_t *framebuffer, int width, int height, const Texture* image, Rect *src, Rect *dest) {
+    // Skip this render call if the destination is off the screen.
+    if (dest->x > width || dest->y > height || dest->x + dest->w < 0 || dest->y + dest->h < 0)
+        return;
+
+    double xs = src->w / (double) dest->w; // x-scale
+    double ys = src->h / (double) dest->h; // y-scale
+#pragma omp parallel for
+    for (int x = 0; x < dest->w; ++x) {
+        int screen_x;
+        int screen_y;
+        uint32_t pixel;
+        int alpha;
+        for (int y = 0; y < dest->h; ++y) {
+            screen_x = dest->x + x;
+            screen_y = dest->y + y;
+            if (screen_x >= 0 && screen_y >= 0 && screen_x < width && screen_y < height) {
+                pixel = image->image[(src->y + (int) ((dest->h - y - 1) * ys)) * image->w + (src->x + (int) ((dest->w - x - 1) * xs))];
+                alpha = pixel >> 24;
+                if (alpha == 255)
+                    framebuffer[screen_y * width + screen_x] = pixel;
+                else if (alpha != 0)
+                    framebuffer[screen_y * width + screen_x] = OverlayPixels(framebuffer[screen_y * width + screen_x], pixel, alpha / 255.0);
+            }
+        }
+    }
+}
+
+void Renderer::Render270(uint32_t *framebuffer, int width, int height, const Texture* image, Rect *src, Rect *dest) {
+    // Skip this render call if the destination is off the screen.
+    if (dest->x > width || dest->y > height || dest->x + dest->w < 0 || dest->y + dest->h < 0)
+        return;
+
+    double xs = src->w / (double) dest->w; // x-scale
+    double ys = src->h / (double) dest->h; // y-scale
+#pragma omp parallel for
+    for (int x = 0; x < dest->w; ++x) {
+        int screen_x;
+        int screen_y;
+        uint32_t pixel;
+        int alpha;
+        for (int y = 0; y < dest->h; ++y) {
+            screen_x = dest->x + x;
+            screen_y = dest->y + y;
+            if (screen_x >= 0 && screen_y >= 0 && screen_x < width && screen_y < height) {
+                pixel = image->image[(src->x + (int) (x * xs)) * image->h + (src->y + (int) ((dest->h - y - 1) * ys))];
+                alpha = pixel >> 24;
+                if (alpha == 255)
+                    framebuffer[screen_y * width + screen_x] = pixel;
+                else if (alpha != 0)
+                    framebuffer[screen_y * width + screen_x] = OverlayPixels(framebuffer[screen_y * width + screen_x], pixel, alpha / 255.0);
+            }
+        }
+    }
+}
+
+void Renderer::Render(const Texture* image, Rect *dest, int angle) {
+    Rect src = {0, 0, image->w, image->h};
+    switch (angle) {
+        case 90:
+            Render90(framebuffer, width, height, image, &src, dest);
+            break;
+        case 180:
+            Render180(framebuffer, width, height, image, &src, dest);
+            break;
+        case 270:
+            Render270(framebuffer, width, height, image, &src, dest);
+            break;
+        default:
+            Render(image, &src, dest);
+            break;
+    }
+}
+
+void Renderer::Render(const Texture* image, Rect *src, Rect *dest) {
     // Skip this render call if the destination is off the screen.
     if (dest->x > width || dest->y > height || dest->x + dest->w < 0 || dest->y + dest->h < 0)
         return;
@@ -45,14 +127,16 @@ void Renderer::Render(Texture *image, Rect *src, Rect *dest) {
                 pixel = image->image[(src->y + (int) (y * ys)) * image->w + (src->x + (int) (x * xs))];
                 alpha = pixel >> 24;
                 //TODO: This can only handle full alpha or no alpha
-                if (alpha != 0)
+                if (alpha == 255)
                     framebuffer[screen_y * width + screen_x] = pixel;
+                else if (alpha != 0)
+                    framebuffer[screen_y * width + screen_x] = OverlayPixels(framebuffer[screen_y * width + screen_x], pixel, alpha / 255.0);
             }
         }
     }
 }
 
-void Renderer::Render(Texture *image, Rect *src, Rect *dest, double angle) {
+void Renderer::Render(const Texture* image, Rect *src, Rect *dest, double angle) {
     // Skip this render call if the destination is off the screen.
     if (dest->x > width || dest->y > height || dest->x + dest->w < 0 || dest->y + dest->h < 0)
         return;
@@ -88,7 +172,7 @@ void Renderer::Render(Texture *image, Rect *src, Rect *dest, double angle) {
     }
 }
 
-void Renderer::RenderForceAlpha(Texture *image, Rect *dest, double opacity) {
+void Renderer::RenderForceAlpha(const Texture* image, Rect *dest, double opacity) {
     // Skip this render call if the destination is off the screen.
     if (dest->x > width || dest->y > height || dest->x + dest->w < 0 || dest->y + dest->h < 0)
         return;

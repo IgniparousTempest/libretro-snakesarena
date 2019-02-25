@@ -2,7 +2,7 @@
 #define LR_SUPERFLAPPYBIRD_INPUT_H
 
 struct Input {
-    bool select;
+    bool accept;
     bool back;
     bool right;
     bool down;
@@ -10,7 +10,7 @@ struct Input {
     bool up;
     bool start;
 
-    bool select_pressed;
+    bool accept_pressed;
     bool back_pressed;
     bool right_pressed;
     bool down_pressed;
@@ -18,7 +18,7 @@ struct Input {
     bool up_pressed;
     bool start_pressed;
 
-    bool select_released;
+    bool accept_released;
     bool back_released;
     bool right_released;
     bool down_released;

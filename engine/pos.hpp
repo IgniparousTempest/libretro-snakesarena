@@ -17,6 +17,11 @@ struct Pos
     bool operator==(Pos pos) const { return x == pos.x && y == pos.y; }
     bool operator!=(Pos pos) const { return !(*this == pos); }
 
+    std::string ToString()
+    {
+        return "{x: " + std::to_string(x) + ", y: " + std::to_string(y) + "}";
+    }
+
     int x, y;
 };
 
