@@ -9,6 +9,7 @@ void AudioMixer::Play(Sound *sound) {
 
 void AudioMixer::Render(int16_t *audio_buffer, size_t length) {
     if (enabled) {
+        mtx.lock();
         // Combine signals
         int64_t signal;
         for (int i = 0; i < length; ++i) {
@@ -31,6 +32,7 @@ void AudioMixer::Render(int16_t *audio_buffer, size_t length) {
         for (auto &stream : streams) {
             stream.erase(stream.begin(), stream.begin() + length);
         }
+        mtx.unlock();
     } else {
         for (int i = 0; i < length; ++i)
             audio_buffer[i] = 0;
@@ -75,6 +77,7 @@ int16_t AudioMixer::ClampSample(int64_t signal) {
 }
 
 void AudioMixer::Clear() {
-    while (streams.begin() != streams.end())
-        streams.erase(streams.begin());
+    mtx.lock();
+    streams = {};
+    mtx.unlock();
 }

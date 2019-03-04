@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <deque>
+#include <mutex>
 #include "sound.hpp"
 
 class AudioMixer {
@@ -28,6 +29,7 @@ public:
 
 private:
     bool enabled = true;
+    std::mutex mtx;
 
     /// Result = augend + addend. If overflow or underflow occurs, then it clips to either LONG_MIN or LONG_MAX.
     /// \param augend The number to add to.
