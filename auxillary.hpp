@@ -61,12 +61,12 @@ public:
     /// Returns the direction that is opposite to the one provided.
     /// \param direction The direction to find the opposite of.
     /// \return The opposite direction.
-    static Direction OppositionDirection(Direction direction) {
+    static Direction OppositeDirection(Direction direction) {
         switch (direction) {
             case UP:
                 return DOWN;
             case DOWN:
-                return LEFT;
+                return UP;
             case LEFT:
                 return RIGHT;
             case RIGHT:

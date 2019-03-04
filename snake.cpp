@@ -22,8 +22,8 @@ field_height(field_height) {
     redraw_body = true;
     moves_queue.push_back(spawn.second);
     body.push_back(spawn.first);
-    body.push_back(Auxiliary::ApplyDirection(body.back(), Auxiliary::OppositionDirection(spawn.second)));
-    body.push_back(Auxiliary::ApplyDirection(body.back(), Auxiliary::OppositionDirection(spawn.second)));
+    body.push_back(Auxiliary::ApplyDirection(body.back(), Auxiliary::OppositeDirection(spawn.second)));
+    body.push_back(Auxiliary::ApplyDirection(body.back(), Auxiliary::OppositeDirection(spawn.second)));
     body_orientations.push_front(moves_queue.front());
     body_orientations.push_front(moves_queue.front());
     body_orientations.push_front(moves_queue.front());
