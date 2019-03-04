@@ -13,27 +13,32 @@ GameManager::GameManager(unsigned int screen_width, unsigned int screen_height, 
     renderer = new Renderer(screen_width, screen_height);
     RefreshLevels(core_folder_path);
 
-    PushNewContext(new ContextMenu(this, &mixer, save_data, screen_width, screen_height, assets, &levels, 8, renderer));
+    PushNewContext(new ContextMenu(this, &mixer, save_data, screen_width, screen_height, assets, &levels, 8));
 }
 
 void GameManager::GameLoop(double delta_time, std::vector<Input> controller_inputs) {
-    contexts.top()->Update(delta_time, std::move(controller_inputs));
+    contexts.front()->Update(delta_time, std::move(controller_inputs));
 }
 
 uint32_t *GameManager::GetFrameBuffer() {
-    contexts.top()->Render(renderer);
+    contexts.front()->Render(renderer);
     return renderer->framebuffer;
 }
 
 void GameManager::PushNewContext(Context *context) {
     std::cout << "Changing context to: \"" << context->Name() << "\"." << std::endl;
-    contexts.push(context);
+    contexts.push_front(context);
 }
 
-void GameManager::EndCurrentContext() {
-    std::cout << "Ending current context." << std::endl;
-    delete contexts.top();
-    contexts.pop();
+void GameManager::EndContext(Context *context) {
+    for (int i = 0; i < contexts.size(); ++i) {
+        if (contexts[i] == context) {
+            std::cout << "Ending selected context: \"" << context->Name() << "\"." << std::endl;
+            delete context;
+            contexts.erase(contexts.begin() + i);
+            return;
+        }
+    }
 }
 
 void GameManager::RefreshLevels(std::string level_folder_path) {

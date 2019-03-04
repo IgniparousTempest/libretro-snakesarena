@@ -8,15 +8,13 @@
 class ContextMenu : public Context {
 public:
     ContextMenu(GameManager *game, AudioMixer *mixer, SaveData *save_data, unsigned int screen_width,
-            unsigned int screen_height,Assets *assets, std::vector<Level> *levels, unsigned int max_players,
-            Renderer *renderer);
+            unsigned int screen_height, Assets *assets, std::vector<Level> *levels, unsigned int max_players);
 
     void Update(double delta_time, std::vector<Input> controller_inputs) override;
 
     void Render(Renderer *renderer) override;
 
 private:
-    Renderer *renderer;
     std::vector<Level> *levels;
     int controls_index = 0;
     int selected_level;

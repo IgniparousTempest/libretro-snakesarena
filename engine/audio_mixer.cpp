@@ -73,3 +73,8 @@ int16_t AudioMixer::ClampSample(int64_t signal) {
     else
         return static_cast<int16_t>(signal);
 }
+
+void AudioMixer::Clear() {
+    while (streams.begin() != streams.end())
+        streams.erase(streams.begin());
+}

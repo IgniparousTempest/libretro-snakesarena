@@ -12,7 +12,11 @@ struct SnakeAssets {
     Texture *portrait;
     Texture *head;
     Texture *body_straight;
+    Texture *body_straight_vertical;
     Texture *body_turn;
+    Texture *body_turn_top_right;
+    Texture *body_turn_right_bottom;
+    Texture *body_turn_bottom_left;
     Texture *tail_straight;
     Texture *tail_turn_left;
     Texture *tail_turn_right;
@@ -23,7 +27,11 @@ struct SnakeAssets {
         portrait = Image::LoadBMP(core_folder_path + path_portrait);
         head = Image::LoadBMP(core_folder_path + path_head);
         body_straight = Image::LoadBMP(core_folder_path + path_body_straight);
+        body_straight_vertical = body_straight->Rotate90CW();
         body_turn = Image::LoadBMP(core_folder_path + path_body_turn);
+        body_turn_top_right = body_turn->Rotate90CW();
+        body_turn_right_bottom = body_turn->Rotate180();
+        body_turn_bottom_left = body_turn->Rotate90CCW();
         tail_straight = Image::LoadBMP(core_folder_path + path_tail_straight);
         tail_turn_left = Image::LoadBMP(core_folder_path + path_tail_turn_left);
         tail_turn_right = tail_turn_left->FlipHorizontally();
@@ -47,6 +55,9 @@ public:
     Texture *ui_start_button;
     Texture *ui_arrow_left;
     Texture *ui_arrow_right;
+    Texture *ui_button_play_again;
+    Texture *ui_button_main_menu;
+    Texture *ui_winner;
     Sound *snd_chomp;
     Sound *snd_crash;
     std::vector<Sound*> snd_background;
@@ -75,6 +86,9 @@ public:
         ui_start_button = Image::LoadBMP(core_folder_path + "resources/ui_start_button.bmp");
         ui_arrow_left = Image::LoadBMP(core_folder_path + "resources/ui_arrow_left.bmp");
         ui_arrow_right = Image::LoadBMP(core_folder_path + "resources/ui_arrow_right.bmp");
+        ui_button_play_again = Image::LoadBMP(core_folder_path + "resources/ui_button_play_again.bmp");
+        ui_button_main_menu = Image::LoadBMP(core_folder_path + "resources/ui_button_menu.bmp");
+        ui_winner = Image::LoadBMP(core_folder_path + "resources/ui_winner.bmp");
 
         snd_chomp = Audio::LoadWav(core_folder_path + "resources/audio/chomp.wav");
         snd_crash = Audio::LoadWav(core_folder_path + "resources/audio/crash.wav");

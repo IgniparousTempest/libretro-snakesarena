@@ -23,6 +23,9 @@ public:
     /// \param enable Whether to enables or disables the sound output.
     void Enable(bool enable);
 
+    /// Clears all audio from the mixer.
+    void Clear();
+
 private:
     bool enabled = true;
 

@@ -2,7 +2,7 @@
 #define LR_SUPERSNAKES_GAME_HPP
 
 
-#include <stack>
+#include <deque>
 #include "contexts/context.hpp"
 #include "engine/audio_mixer.hpp"
 #include "engine/renderer.hpp"
@@ -28,11 +28,11 @@ public:
 
     void PushNewContext(Context *context);
 
-    void EndCurrentContext();
+    void EndContext(Context *context);
 
 private:
     std::vector<Level> levels;
-    std::stack<Context*> contexts;
+    std::deque<Context*> contexts;
     Renderer *renderer;
     Assets *assets;
     SaveData *save_data;

@@ -1,7 +1,7 @@
 #include "field_header.hpp"
 #include "auxillary.hpp"
 
-FieldHeader::FieldHeader(Assets *assets, int width, int height, unsigned int num_players) : assets(assets) {
+FieldHeader::FieldHeader(Assets *assets, int width, int height, unsigned int num_players, std::vector<int> *wins) : assets(assets) {
     rect = {0, 0, width, height};
     text = {};
 
@@ -11,6 +11,11 @@ FieldHeader::FieldHeader(Assets *assets, int width, int height, unsigned int num
     for (int i = 0; i < num_players; ++i)
         snake_portraits.push_back({assets->snakes[i]->portrait, {x_pos_8[i], 1, assets->snakes[i]->portrait->w, assets->snakes[i]->portrait->h}});
     text.resize(num_players);
+    if (wins == nullptr)
+        for (int i = 0; i < num_players; ++i)
+            this->wins.push_back(0);
+    else
+        this->wins = *wins;
     for (int i = 0; i < num_players; ++i)
         SetScore(i, 0);
 }
@@ -36,7 +41,7 @@ void FieldHeader::SetScore(int player_number, int score) {
     auto score_src_rects = assets->GetFontSrcRect("Score: " + std::to_string(score));
     auto score_rects = Auxiliary::getFontRects(score_src_rects, x, 0, 1, 1);
 
-    auto wins_src_rects = assets->GetFontSrcRect("Wins: 0");
+    auto wins_src_rects = assets->GetFontSrcRect("Wins: " + std::to_string(wins[player_number]));
     auto wins_rects = Auxiliary::getFontRects(wins_src_rects, x, 8, 1, 1);
 
     text_t new_text;

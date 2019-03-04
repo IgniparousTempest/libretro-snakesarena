@@ -12,6 +12,7 @@ class Field;
 class Snake {
 public:
     int score = 0;
+    int wins = 0;
 
     Snake(int square_size, int field_width, int field_height, std::pair<Pos, Direction> spawn, SnakeAssets *assets);
 

@@ -2,10 +2,9 @@
 #include "context_main.hpp"
 
 ContextMenu::ContextMenu(GameManager *game, AudioMixer *mixer, SaveData *save_data, unsigned int screen_width,
-        unsigned int screen_height, Assets *assets, std::vector<Level> *levels, unsigned int max_players,
-        Renderer *renderer) :
+        unsigned int screen_height, Assets *assets, std::vector<Level> *levels, unsigned int max_players) :
         Context(game, assets, mixer, save_data, screen_width, screen_height, "Main Menu"), levels(levels),
-        max_players(max_players), renderer(renderer) {
+        max_players(max_players) {
     selected_level = save_data->data.previous_arena_index;
     num_players = save_data->data.previous_number_players;
     title_dest = {7, 2, assets->ui_title->w, assets->ui_title->h};
@@ -54,7 +53,7 @@ void ContextMenu::Update(double delta_time, std::vector<Input> controller_inputs
             save_data->data.previous_arena_index = selected_level;
             save_data->data.previous_number_players = num_players;
             save_data->Serialise();
-            game_manager->PushNewContext(new ContextMain(game_manager, mixer, save_data, screen_width, screen_height, assets, &(*levels)[selected_level], renderer, num_players));
+            game_manager->PushNewContext(new ContextMain(game_manager, mixer, save_data, screen_width, screen_height, assets, &(*levels)[selected_level], num_players));
         }
     }
 }

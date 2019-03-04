@@ -9,7 +9,7 @@
 
 class FieldHeader {
 public:
-    FieldHeader(Assets *assets, int width, int height, unsigned int num_players);
+    FieldHeader(Assets *assets, int width, int height, unsigned int num_players, std::vector<int> *wins = nullptr);
 
     void Update(double delta_time, std::vector<Input> controller_inputs);
 
@@ -22,6 +22,7 @@ public:
 
 private:
     Assets *assets;
+    std::vector<int> wins;
     std::vector<text_t> text;
     std::vector<std::pair<Texture*, Rect>> snake_portraits;
     Rect rect;

@@ -16,7 +16,10 @@ class Snake;
 
 class Field {
 public:
-    Field(int square_size, int field_width, int field_height, int y_offset, Assets* assets, AudioMixer *mixer, Level* level, int num_players);
+    std::vector<Snake> players;
+    const Level* level;
+
+    Field(int square_size, int field_width, int field_height, int y_offset, Assets* assets, AudioMixer *mixer, const Level* level, int num_players);
 
     void Update(double delta_time, std::vector<Input> controller_inputs, FieldHeader* header);
 
@@ -53,7 +56,10 @@ public:
         renderer->RenderSquare((pos.x + pos.y) % 2 == 0 ? colour_light : colour_dark, &dest);
     }
 
+    bool AllSnakesDead();
+
 private:
+    bool first_render = true;
     std::mt19937 rng;
     int new_food = 0;
     int square_size;
@@ -68,8 +74,6 @@ private:
     Sound *snd_chomp;
     Sound *snd_crash;
     std::vector<Pos> redraws_required;
-    std::vector<Snake> players;
-    Level* level;
 };
 
 
