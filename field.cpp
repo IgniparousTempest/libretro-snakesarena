@@ -71,29 +71,31 @@ void Field::Update(double delta_time, std::vector<Input> controller_inputs, Fiel
     // Replenish food
     if (food.empty()) {
         std::vector<Pos> valid;
-        for (int x = 0; x < field_width; ++x)
-            for (int y = 0; y < field_height; ++y) {
-                bool free = true;
-                // Can't spawn on player
-                for (auto &player : players) {
-                    auto body = player.Body();
-                    auto ptr = find(body->begin(), body->end(), Pos(x, y));
-                    if (ptr != body->end()) {
+        int x, y;
+        for (auto fruit_spawn : level->fruit_spawn) {
+            x = fruit_spawn.x;
+            y = fruit_spawn.y;
+            bool free = true;
+            // Can't spawn on player
+            for (auto &player : players) {
+                auto body = player.Body();
+                auto ptr = find(body->begin(), body->end(), Pos(x, y));
+                if (ptr != body->end()) {
+                    free = false;
+                    break;
+                }
+            }
+            // Can't spawn on wall
+            if (free)
+                for (auto &wall : level->walls) {
+                    if (wall.first == Pos(x, y)) {
                         free = false;
                         break;
                     }
                 }
-                // Can't spawn on wall
-                if (free)
-                    for (auto &wall : level->walls) {
-                        if (wall.first == Pos(x, y)) {
-                            free = false;
-                            break;
-                        }
-                    }
-                if (free)
-                    valid.emplace_back(x, y);
-            }
+            if (free)
+                valid.emplace_back(x, y);
+        }
         std::uniform_int_distribution<std::mt19937::result_type> dist(0, valid.size() - 1);
         auto i = dist(rng);
         food.emplace_back(valid[i].x, valid[i].y);

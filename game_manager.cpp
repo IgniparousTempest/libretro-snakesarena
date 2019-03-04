@@ -46,4 +46,6 @@ void GameManager::RefreshLevels(std::string level_folder_path) {
     levels.emplace_back(level_folder_path + "levels/level_0_open.tmx", assets);
     levels.emplace_back(level_folder_path + "levels/level_1_box.tmx", assets);
     levels.emplace_back(level_folder_path + "levels/level_2_opening.tmx", assets);
+    levels.emplace_back(level_folder_path + "levels/level_3_small.tmx", assets);
+//    levels.emplace_back(level_folder_path + "levels/level_Z_heart.tmx", assets);
 }

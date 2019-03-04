@@ -30,7 +30,9 @@ void Level::LoadFromFile(std::string path, Assets *assets) {
     if (width != 30 || height != 16)
         throw std::runtime_error("Invalid level file: " + path);
 
-    auto data = std::string(map.children("layer").begin()->child("data").child_value());
+    auto layers = map.children("layer");
+    auto data = std::string(layers.begin()->child("data").child_value());
+    auto spawn_data = std::string(std::next(layers.begin())->child("data").child_value());
 
     std::cout << "Parsing level file (" << path << "):" << std::endl;
     std::string delimiter = ",";
@@ -47,6 +49,21 @@ void Level::LoadFromFile(std::string path, Assets *assets) {
         }
     }
     ParseToken(x, y, std::stoi(data), assets);
+
+    std::cout << "Parsing spawn layer for level." << std::endl;
+    x = 0, y = 0;
+    while ((pos = spawn_data.find(delimiter)) != std::string::npos) {
+        token = spawn_data.substr(0, pos);
+        spawn_data.erase(0, pos + delimiter.length());
+        if (std::stoi(token) != 0)
+            fruit_spawn.emplace_back(x, y);
+        if (++x >= width) {
+            x = 0;
+            y++;
+        }
+    }
+    if (std::stoi(data) != 0)
+        fruit_spawn.emplace_back(x, y);
 }
 
 void Level::ParseToken(int x, int y, int token, Assets *assets) {

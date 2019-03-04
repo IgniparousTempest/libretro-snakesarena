@@ -15,6 +15,7 @@ class Level {
 public:
     walls_t walls;
     std::vector<std::pair<Pos, Direction>> spawns;
+    std::vector<Pos> fruit_spawn;
 
     Level(std::string path, Assets *assets);
 
