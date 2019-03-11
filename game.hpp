@@ -13,22 +13,24 @@
 
 class Context;
 
-class GameManager {
+class Game : public ParentContext {
 public:
     static const char *game_name;
     static const char *game_version;
     static const int game_fps = 50;
     AudioMixer mixer;
 
-    GameManager(unsigned int screen_width, unsigned int screen_height, std::string core_folder_path, std::string config_folder_path);
+    Game(unsigned int screen_width, unsigned int screen_height, std::string core_folder_path, std::string config_folder_path);
 
     void GameLoop(double delta_time, std::vector<Input> controller_inputs);
 
     uint32_t *GetFrameBuffer();
 
-    void PushNewContext(Context *context);
+    void PushNewContext(Context *context) override;
 
-    void EndContext(Context *context);
+    void EndContext(Context *context) override;
+
+    Renderer *GetRenderer() override;
 
 private:
     std::vector<Level> levels;

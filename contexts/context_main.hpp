@@ -10,7 +10,7 @@
 
 class ContextMain : public Context {
 public:
-    ContextMain(GameManager *game, AudioMixer *mixer, SaveData *save_data, unsigned int screen_width,
+    ContextMain(ParentContext *game, AudioMixer *mixer, SaveData *save_data, unsigned int screen_width,
             unsigned int screen_height, Assets *assets, const Level* level, unsigned int players,
             std::vector<int> *wins = nullptr);
 
@@ -18,9 +18,12 @@ public:
 
     void Render(Renderer *renderer) override;
 
+    void OnResume() override {};
+
 private:
     Field *field;
     FieldHeader *field_header;
+    const Level* level;
 };
 
 

@@ -2,7 +2,7 @@
 
 #include "field.hpp"
 
-Field::Field(int square_size, int field_width, int field_height, int y_offset, Assets *assets, AudioMixer *mixer, const Level* level, int num_players) :
+Field::Field(int square_size, int field_width, int field_height, int y_offset, Assets *assets, AudioMixer *mixer, const Level* level, int num_players, Renderer *renderer) :
         square_size(square_size), field_width(field_width), field_height(field_height), y_offset(y_offset),
         level(level), raspberry(assets->raspberry), snd_chomp(assets->snd_chomp), snd_crash(assets->snd_crash), mixer(mixer) {
     std::cout << "Field will have square of " << square_size << "x" << square_size << " in a matrix of " << field_width << "x" << field_height << std::endl;
@@ -11,6 +11,8 @@ Field::Field(int square_size, int field_width, int field_height, int y_offset, A
     for (int i = 0; i < num_players; ++i)
         players.emplace_back(square_size, field_width, field_height, level->spawns[i], assets->snakes[i]);
     rng.seed(std::random_device()());
+
+    RenderAll(renderer);
 }
 
 void Field::Update(double delta_time, std::vector<Input> controller_inputs, FieldHeader* header) {
@@ -104,11 +106,6 @@ void Field::Update(double delta_time, std::vector<Input> controller_inputs, Fiel
 }
 
 void Field::PartialRender(Renderer *renderer) {
-    if (first_render) {
-        first_render = false;
-        RenderAll(renderer);
-        return;
-    }
     // Redraw select fields
     if (!redraws_required.empty()) {
         Rect dest = {0, 0, square_size, square_size};

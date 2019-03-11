@@ -64,6 +64,17 @@ void Level::LoadFromFile(std::string path, Assets *assets) {
     }
     if (std::stoi(data) != 0)
         fruit_spawn.emplace_back(x, y);
+
+    // Read properties
+    const char *name, *value;
+    for (pugi::xml_node property : map.child("properties").children("property")) {
+        name = property.attribute("name").value();
+        value = property.attribute("value").value();
+        std::cout << name << ": " << value << std::endl;
+        if (std::strcmp(name, "name") == 0) {
+            level_name = std::string(value);
+        }
+    }
 }
 
 void Level::ParseToken(int x, int y, int token, Assets *assets) {

@@ -7,20 +7,22 @@
 #include "../engine/audio_mixer.hpp"
 #include "../engine/renderer.hpp"
 #include "../assets.hpp"
-#include "../game_manager.hpp"
+#include "parent_context.hpp"
 #include "../input.hpp"
 #include "../save_data.hpp"
 
-class GameManager;
+class ParentContext;
 
 class Context {
 public:
-    explicit Context(GameManager *game, Assets *assets, AudioMixer *mixer, SaveData *save_data,
+    explicit Context(ParentContext *parent_context, Assets *assets, AudioMixer *mixer, SaveData *save_data,
             unsigned int screen_width, unsigned int screen_height, std::string context_name) :
-            game_manager(game), assets(assets), mixer(mixer), screen_width(screen_width), screen_height(screen_height),
+            parent(parent_context), assets(assets), mixer(mixer), screen_width(screen_width), screen_height(screen_height),
             save_data(save_data), context_name(std::move(context_name)) {}
 
     ~Context() = default;
+
+    virtual void OnResume() = 0;
 
     virtual void Update(double delta_time, std::vector<Input> controller_inputs) = 0;
 
@@ -31,7 +33,7 @@ public:
     }
 
 protected:
-    GameManager *game_manager;
+    ParentContext *parent;
     Assets *assets;
     AudioMixer *mixer;
     SaveData *save_data;

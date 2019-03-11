@@ -3,10 +3,10 @@
 #include "context_game_over.hpp"
 #include "context_main.hpp"
 
-ContextGameOver::ContextGameOver(GameManager *game, AudioMixer *mixer, SaveData *save_data, Assets *assets,
-        unsigned int screen_width, unsigned int screen_height, const Level* level, std::vector<int> scores, std::vector<int> wins) :
+ContextGameOver::ContextGameOver(ParentContext *game, AudioMixer *mixer, SaveData *save_data, Assets *assets,
+        unsigned int screen_width, unsigned int screen_height, const Level* level, std::vector<int> scores, std::vector<int> wins, const uint32_t *screen_buffer) :
         Context(game, assets, mixer, save_data, screen_width, screen_height, "Game Over Context"),
-        scores(std::move(scores)), wins(std::move(wins)), level(level) {
+        scores(std::move(scores)), wins(std::move(wins)), level(level), old_frame_buffer(screen_buffer) {
     assert(this->scores.size() == this->wins.size());
     rect_winner = {((int)screen_width - assets->ui_winner->w) / 2, 50, assets->ui_winner->w, assets->ui_winner->h};
     rect_btn_play_again = {((int)screen_width - assets->ui_button_play_again->w) / 2, rect_winner.y + rect_winner.h + 20, assets->ui_button_play_again->w, assets->ui_button_play_again->h};
@@ -34,11 +34,11 @@ void ContextGameOver::Update(double delta_time, std::vector<Input> controller_in
         else if (input.accept_pressed) {
             switch (menu_index) {
                 case 0:
-                    game_manager->PushNewContext(new ContextMain(game_manager, mixer, save_data, screen_width, screen_height, assets, level, (int) scores.size(), &wins));
-                    game_manager->EndContext(this);
+                    parent->PushNewContext(new ContextMain(parent, mixer, save_data, screen_width, screen_height, assets, level, (int) scores.size(), &wins));
+                    parent->EndContext(this);
                     return;
                 default:
-                    game_manager->EndContext(this);
+                    parent->EndContext(this);
                     return;
             }
         }
@@ -46,12 +46,7 @@ void ContextGameOver::Update(double delta_time, std::vector<Input> controller_in
 }
 
 void ContextGameOver::Render(Renderer *renderer) {
-    if (old_frame_buffer != nullptr)
-        std::copy(old_frame_buffer, old_frame_buffer + renderer->width * renderer->height, renderer->framebuffer);
-    else {
-        old_frame_buffer = new uint32_t[renderer->width * renderer->height];
-        std::copy(renderer->framebuffer, renderer->framebuffer + renderer->width * renderer->height, old_frame_buffer);
-    }
+    std::copy(old_frame_buffer, old_frame_buffer + renderer->width * renderer->height, renderer->framebuffer);
     renderer->Render(assets->ui_winner, &rect_winner);
     renderer->Render(assets->ui_button_play_again, &rect_btn_play_again);
     renderer->Render(assets->ui_button_main_menu, &rect_btn_main_menu);

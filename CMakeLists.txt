@@ -27,10 +27,11 @@ add_library(${PROJECT_NAME} SHARED
         libretro.hpp
         libretro.cpp
         assets.hpp
-        auxillary.hpp
+        auxiliary.hpp
         field.cpp field.hpp
         field_header.cpp field_header.hpp
-        game_manager.cpp game_manager.hpp
+        contexts/parent_context.hpp
+        game.cpp game.hpp
         input.hpp
         level.cpp level.hpp
         save_data.cpp save_data.hpp

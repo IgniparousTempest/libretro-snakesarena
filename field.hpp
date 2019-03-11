@@ -19,7 +19,7 @@ public:
     std::vector<Snake> players;
     const Level* level;
 
-    Field(int square_size, int field_width, int field_height, int y_offset, Assets* assets, AudioMixer *mixer, const Level* level, int num_players);
+    Field(int square_size, int field_width, int field_height, int y_offset, Assets* assets, AudioMixer *mixer, const Level* level, int num_players, Renderer *renderer);
 
     void Update(double delta_time, std::vector<Input> controller_inputs, FieldHeader* header);
 
@@ -59,7 +59,6 @@ public:
     bool AllSnakesDead();
 
 private:
-    bool first_render = true;
     std::mt19937 rng;
     int new_food = 0;
     int square_size;

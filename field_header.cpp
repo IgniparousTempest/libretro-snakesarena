@@ -1,5 +1,5 @@
 #include "field_header.hpp"
-#include "auxillary.hpp"
+#include "auxiliary.hpp"
 
 FieldHeader::FieldHeader(Assets *assets, int width, int height, unsigned int num_players, std::vector<int> *wins) : assets(assets) {
     rect = {0, 0, width, height};

@@ -7,7 +7,7 @@
 #include "engine/pos.hpp"
 #include "engine/texture.hpp"
 #include "assets.hpp"
-#include "auxillary.hpp"
+#include "auxiliary.hpp"
 
 typedef std::vector<std::pair<Pos, Texture*>> walls_t;
 
@@ -16,6 +16,7 @@ public:
     walls_t walls;
     std::vector<std::pair<Pos, Direction>> spawns;
     std::vector<Pos> fruit_spawn;
+    std::string level_name;
 
     Level(std::string path, Assets *assets);
 

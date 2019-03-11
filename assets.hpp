@@ -11,6 +11,7 @@ typedef std::vector<std::pair<Rect, Rect>> text_t;
 struct SnakeAssets {
     Texture *portrait;
     Texture *head;
+    Texture *head_down;
     Texture *body_straight;
     Texture *body_straight_vertical;
     Texture *body_turn;
@@ -18,6 +19,7 @@ struct SnakeAssets {
     Texture *body_turn_right_bottom;
     Texture *body_turn_bottom_left;
     Texture *tail_straight;
+    Texture *tail_straight_down;
     Texture *tail_turn_left;
     Texture *tail_turn_right;
 
@@ -26,6 +28,7 @@ struct SnakeAssets {
                 const std::string &path_tail_turn_left) {
         portrait = Image::LoadBMP(core_folder_path + path_portrait);
         head = Image::LoadBMP(core_folder_path + path_head);
+        head_down = head->Rotate90CW();
         body_straight = Image::LoadBMP(core_folder_path + path_body_straight);
         body_straight_vertical = body_straight->Rotate90CW();
         body_turn = Image::LoadBMP(core_folder_path + path_body_turn);
@@ -33,6 +36,7 @@ struct SnakeAssets {
         body_turn_right_bottom = body_turn->Rotate180();
         body_turn_bottom_left = body_turn->Rotate90CCW();
         tail_straight = Image::LoadBMP(core_folder_path + path_tail_straight);
+        tail_straight_down = tail_straight->Rotate90CW();
         tail_turn_left = Image::LoadBMP(core_folder_path + path_tail_turn_left);
         tail_turn_right = tail_turn_left->FlipHorizontally();
     }
@@ -57,6 +61,7 @@ public:
     Texture *ui_arrow_right;
     Texture *ui_button_play_again;
     Texture *ui_button_main_menu;
+    Texture *ui_keyboard_cursor;
     Texture *ui_winner;
     Sound *snd_chomp;
     Sound *snd_crash;
@@ -88,6 +93,7 @@ public:
         ui_arrow_right = Image::LoadBMP(core_folder_path + "resources/ui_arrow_right.bmp");
         ui_button_play_again = Image::LoadBMP(core_folder_path + "resources/ui_button_play_again.bmp");
         ui_button_main_menu = Image::LoadBMP(core_folder_path + "resources/ui_button_menu.bmp");
+        ui_keyboard_cursor = Image::LoadBMP(core_folder_path + "resources/ui_keyboard_cursor.bmp");
         ui_winner = Image::LoadBMP(core_folder_path + "resources/ui_winner.bmp");
 
         snd_chomp = Audio::LoadWav(core_folder_path + "resources/audio/chomp.wav");
